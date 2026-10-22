@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oinkie - Sistem Barang Hilang Sekolah</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="CSSstyle.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        oinkie: {
+                            blue: '#1d4ed8', darkblue: '#1e3a8a', yellow: '#fbc02d',
+                            yellowHover: '#f5b000', accentPink: '#ff758c'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen flex flex-col text-slate-800 bg-slate-50 selection:bg-yellow-300 selection:text-slate-900">
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 hidden max-w-sm w-full px-4">
+        <div id="toast-content" class="bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+            <span id="toast-message" class="text-sm font-medium">Berhasil masuk!</span>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SECTION 1: LOGIN & REGISTER PAGE                               -->
+    <!-- ============================================================== -->
+    <section id="loginPageSection" class="auth-bg min-h-screen flex items-center justify-center p-4 relative w-full">
+        <div class="bg-blur-circle circle-1"></div>
+        <div class="bg-blur-circle circle-2"></div>
+        <div class="bg-blur-circle circle-3"></div>
+
+        <div class="w-full max-w-md my-8 relative z-10 flex flex-col items-center">
+            <div class="text-center mb-6 flex flex-col items-center">
+                <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center p-2 mb-3 shadow-lg border border-white/30 transform hover:scale-105 transition-all">
+                    <div class="w-full h-full bg-gradient-to-tr from-pink-300 to-pink-200 rounded-xl flex items-center justify-center shadow-inner text-2xl">
+                        🐷
+                    </div>
+                </div>
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">Oinkie</h1>
+                <p class="text-blue-100 text-xs font-medium tracking-wide mt-0.5 opacity-90">Sistem Barang Hilang Sekolah</p>
+            </div>
+
+            <div class="w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20 backdrop-blur-sm">
+                <div class="card-rainbow-border"></div>
+
+                <div class="p-6 sm:p-8">
+                    <div class="bg-slate-100 p-1 rounded-2xl flex items-center mb-6 text-sm font-semibold">
+                        <button id="tab-masuk" onclick="switchTab('masuk')" class="flex-1 py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 bg-blue-800 text-white shadow-md">
+                            <i class="fa-solid fa-key text-xs"></i>
+                            <span>Masuk</span>
+                        </button>
+                        <button id="tab-daftar" onclick="switchTab('daftar')" class="flex-1 py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 text-slate-500 hover:text-slate-800">
+                            <i class="fa-solid fa-pen-to-square text-xs"></i>
+                            <span>Daftar</span>
+                        </button>
+                    </div>
+
+                    <!-- FORM MASUK -->
+                    <form id="form-masuk" onsubmit="handleLogin(event)" class="space-y-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900">Selamat Datang Kembali!</h2>
+                            <p class="text-xs text-slate-500 mt-1">Masuk untuk melaporkan atau klaim barang.</p>
+                        </div>
+
+                        <div class="space-y-1.5 pt-2">
+                            <label class="block text-xs font-semibold text-slate-700">Username / NIS</label>
+                            <div class="custom-input flex items-center border border-slate-200 rounded-2xl px-3.5 py-3 text-sm">
+                                <i class="fa-solid fa-user text-slate-400 mr-3 text-sm"></i>
+                                <input type="text" id="login-username" required placeholder="username atau NIS kamu" class="w-full bg-transparent focus:outline-none text-slate-800 font-medium">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-semibold text-slate-700">Password</label>
+                            <div class="custom-input flex items-center border border-slate-200 rounded-2xl px-3.5 py-3 text-sm">
+                                <i class="fa-solid fa-lock text-slate-400 mr-3 text-sm"></i>
+                                <input type="password" id="login-password" required placeholder="password kamu" class="w-full bg-transparent focus:outline-none text-slate-800 font-medium">
+                                <button type="button" onclick="togglePasswordVisibility('login-password', 'eye-icon-login')" class="text-slate-400 hover:text-slate-600 px-1">
+                                    <i id="eye-icon-login" class="fa-solid fa-eye-slash text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full mt-2 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-slate-900 font-bold py-3.5 px-4 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2">
+                            <span>🐷</span>
+                            <span>Masuk Sekarang</span>
+                        </button>
+                    </form>
+
+                    <!-- FORM DAFTAR -->
+                    <form id="form-daftar" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900">Buat Akun Baru</h2>
+                            <p class="text-xs text-slate-500 mt-1">Lengkapi data untuk bergabung dengan Oinkie.</p>
+                        </div>
+
+                        <div class="space-y-1.5 pt-1">
+                            <label class="block text-xs font-semibold text-slate-700">Nama Lengkap</label>
+                            <div class="custom-input flex items-center border border-slate-200 rounded-2xl px-3.5 py-2.5 text-sm">
+                                <i class="fa-solid fa-id-card text-slate-400 mr-3 text-sm"></i>
+                                <input type="text" id="reg-fullname" required placeholder="Nama lengkap kamu" class="w-full bg-transparent focus:outline-none text-slate-800 font-medium">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-semibold text-slate-700">NIS / Username</label>
+                            <div class="custom-input flex items-center border border-slate-200 rounded-2xl px-3.5 py-2.5 text-sm">
+                                <i class="fa-solid fa-user text-slate-400 mr-3 text-sm"></i>
+                                <input type="text" id="reg-username" required placeholder="Nomor Induk Siswa" class="w-full bg-transparent focus:outline-none text-slate-800 font-medium">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-semibold text-slate-700">Password</label>
+                            <div class="custom-input flex items-center border border-slate-200 rounded-2xl px-3.5 py-2.5 text-sm">
+                                <i class="fa-solid fa-lock text-slate-400 mr-3 text-sm"></i>
+                                <input type="password" id="reg-password" required placeholder="Minimal 6 karakter" class="w-full bg-transparent focus:outline-none text-slate-800 font-medium">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full mt-2 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-slate-900 font-bold py-3.5 px-4 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2">
+                            <span>📝</span>
+                            <span>Daftar Akun</span>
+                        </button>
+                    </form>
+
+                    <div class="relative my-6 flex items-center justify-center">
+                        <div class="border-t border-slate-200 w-full"></div>
+                        <span class="bg-white px-3 text-[11px] font-medium text-slate-400 uppercase tracking-wider absolute">atau masuk dengan</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button type="button" onclick="handleSocialLogin('Akun Sekolah')" class="flex items-center justify-center gap-2 border border-slate-200 bg-white py-2.5 px-3 rounded-2xl text-xs font-semibold text-slate-700 shadow-sm">
+                            <span>🏫</span> <span>Akun Sekolah</span>
+                        </button>
+                        <button type="button" onclick="handleSocialLogin('Google')" class="flex items-center justify-center gap-2 border border-slate-200 bg-white py-2.5 px-3 rounded-2xl text-xs font-semibold text-slate-700 shadow-sm">
+                            <i class="fa-brands fa-google text-blue-500"></i> <span>Google</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- SECTION 2: MAIN DASHBOARD PAGE (HIDDEN UNTIL LOGIN)            -->
+    <!-- ============================================================== -->
+    <section id="mainPageSection" class="hidden min-h-screen flex flex-col">
+        <!-- Hero Header -->
+        <header class="hero-gradient text-white pb-24 pt-4 px-4 sm:px-8 relative overflow-hidden">
+            <div class="hero-circle-1"></div>
+            <div class="hero-circle-2"></div>
+
+            <nav class="max-w-7xl mx-auto flex items-center justify-between py-3 relative z-20">
+                <a href="#" class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center p-1.5 border border-white/30 shadow-md">
+                        <div class="w-full h-full bg-pink-200 rounded-lg flex items-center justify-center text-lg">🐷</div>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-xl tracking-tight block leading-none">Oinkie</span>
+                        <span class="text-[10px] text-blue-200 font-medium block">Lost & Found</span>
+                    </div>
+                </a>
+
+                <div class="hidden md:flex items-center gap-8 text-sm font-semibold text-blue-100">
+                    <a href="#" class="text-white">Beranda</a>
+                    <a href="#feedSection" class="hover:text-amber-300">Cari Barang</a>
+                    <a href="javascript:void(0)" onclick="openHelpModal()" class="hover:text-amber-300">Panduan</a>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button onclick="openLaporModal()" class="hidden sm:flex items-center gap-2 bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-900 font-bold px-5 py-2.5 rounded-full text-xs shadow-lg">
+                        <i class="fa-solid fa-plus text-xs"></i> <span>+ Lapor Barang</span>
+                    </button>
+
+                    <div id="userProfileBtn" onclick="navigateTo('login')" class="flex items-center gap-2 bg-white/10 border border-white/20 px-3.5 py-1.5 rounded-full text-xs font-semibold text-white cursor-pointer hover:bg-white/20">
+                        <div class="w-6 h-6 bg-amber-400 text-slate-900 rounded-full flex items-center justify-center font-bold text-[11px]" id="userAvatar">B</div>
+                        <span id="userNameText">Budi Santoso</span>
+                        <i class="fa-solid fa-right-from-bracket text-xs opacity-75 ml-1" title="Keluar"></i>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="max-w-7xl mx-auto pt-8 pb-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+                <div class="lg:col-span-7 space-y-6 text-left">
+                    <div class="inline-flex items-center gap-2 bg-white/15 border border-white/25 px-4 py-1.5 rounded-full text-xs font-bold text-blue-100 uppercase">
+                        <span>🏫</span> <span>SEKOLAH KITA</span>
+                    </div>
+
+                    <h1 class="text-3xl sm:text-5xl font-black text-white leading-tight">
+                        Kehilangan Barang <br/> di Sekolah? <br/>
+                        <span class="text-amber-300">Oinkie Siap Bantu!</span>
+                    </h1>
+
+                    <p class="text-blue-100/90 text-sm sm:text-base font-normal max-w-xl">
+                        Laporkan barang hilang atau temukan barang milik teman. Oinkie akan bantu kamu menghubungkan semua orang! 🎒
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-center gap-3 max-w-2xl pt-2">
+                        <div class="w-full relative flex-1">
+                            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-blue-300 text-sm"></i>
+                            <input type="text" id="heroSearchInput" onkeyup="applyFilters()" placeholder="Cari barang... (tas, buku, hp)" class="w-full pl-11 pr-4 py-3.5 bg-blue-900/40 border border-blue-400/40 rounded-2xl text-sm text-white placeholder-blue-200/70 focus:outline-none">
+                        </div>
+                        <button onclick="openLaporModal()" class="w-full sm:w-auto bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-900 font-extrabold px-6 py-3.5 rounded-2xl text-sm shadow-xl flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus text-xs"></i> <span>+ Lapor Barang</span>
+                        </button>
+                    </div>
+
+                    <!-- Filter Dropdown -->
+                    <div class="flex flex-wrap items-center gap-2.5 pt-1">
+                        <select id="filterKategori" onchange="applyFilters()" class="bg-blue-900/40 border border-blue-400/30 text-white text-xs font-semibold px-4 py-2 rounded-xl">
+                            <option value="semua" class="bg-blue-900">Kategori: Semua</option>
+                            <option value="buku" class="bg-blue-900">Kategori: Buku</option>
+                            <option value="tempat-makan" class="bg-blue-900">Kategori: Tempat Makan</option>
+                            <option value="elektronik" class="bg-blue-900">Kategori: Elektronik</option>
+                            <option value="pakaian" class="bg-blue-900">Kategori: Jaket/Pakaian</option>
+                            <option value="lainnya" class="bg-blue-900">Kategori: Lainnya</option>
+                        </select>
+
+                        <select id="filterStatus" onchange="applyFilters()" class="bg-blue-900/40 border border-blue-400/30 text-white text-xs font-semibold px-4 py-2 rounded-xl">
+                            <option value="semua" class="bg-blue-900">Status: Semua</option>
+                            <option value="hilang" class="bg-blue-900">Status: Hilang</option>
+                            <option value="ditemukan" class="bg-blue-900">Status: Ditemukan</option>
+                        </select>
+
+                        <select id="filterLokasi" onchange="applyFilters()" class="bg-blue-900/40 border border-blue-400/30 text-white text-xs font-semibold px-4 py-2 rounded-xl">
+                            <option value="semua" class="bg-blue-900">Lokasi: Semua</option>
+                            <option value="kantin" class="bg-blue-900">Lokasi: Kantin</option>
+                            <option value="perpustakaan" class="bg-blue-900">Lokasi: Perpustakaan</option>
+                            <option value="lapangan" class="bg-blue-900">Lokasi: Lapangan</option>
+                            <option value="kelas" class="bg-blue-900">Lokasi: Kelas</option>
+                        </select>
+                    </div>
+
+                    <!-- Counter Statistics -->
+                    <div class="flex items-center gap-8 pt-4 border-t border-white/10">
+                        <div>
+                            <span id="statHilang" class="text-3xl font-black text-white block">0</span>
+                            <span class="text-[11px] font-medium text-blue-200">Barang Hilang</span>
+                        </div>
+                        <div>
+                            <span id="statDitemukan" class="text-3xl font-black text-emerald-400 block">0</span>
+                            <span class="text-[11px] font-medium text-blue-200">Ditemukan</span>
+                        </div>
+                        <div>
+                            <span id="statTotal" class="text-3xl font-black text-amber-300 block">0</span>
+                            <span class="text-[11px] font-medium text-blue-200">Total Laporan</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mascot Ilustrasi -->
+                <div class="lg:col-span-5 relative flex items-center justify-center min-h-[280px]">
+                    <div class="w-56 h-56 flex items-center justify-center">
+                        <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-2xl">
+                            <circle cx="100" cy="105" r="55" fill="#FFB7C5" />
+                            <path d="M 50 100 Q 40 140 60 155 Q 100 165 140 155 Q 160 140 150 100 Z" fill="#FFA0B4"/>
+                            <circle cx="78" cy="95" r="5" fill="#1E293B" />
+                            <circle cx="122" cy="95" r="5" fill="#1E293B" />
+                            <ellipse cx="100" cy="110" rx="18" ry="12" fill="#FF8CA3" />
+                            <ellipse cx="93" cy="110" rx="4" ry="5" fill="#D85A75" />
+                            <ellipse cx="107" cy="110" rx="4" ry="5" fill="#D85A75" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-8 pt-6 pb-10 w-full flex-1" id="feedSection">
+            <!-- Category Pills -->
+            <div class="flex items-center gap-2.5 overflow-x-auto pb-4 scrollbar-none">
+                <button onclick="filterByCategory('semua', this)" class="cat-pill bg-blue-800 text-white font-bold px-5 py-2.5 rounded-full text-xs shadow-md">Semua</button>
+                <button onclick="filterByCategory('buku', this)" class="cat-pill bg-white text-slate-700 font-semibold border px-5 py-2.5 rounded-full text-xs shadow-sm">📚 Buku</button>
+                <button onclick="filterByCategory('tempat-makan', this)" class="cat-pill bg-white text-slate-700 font-semibold border px-5 py-2.5 rounded-full text-xs shadow-sm">🍱 Tempat Makan</button>
+                <button onclick="filterByCategory('elektronik', this)" class="cat-pill bg-white text-slate-700 font-semibold border px-5 py-2.5 rounded-full text-xs shadow-sm">📱 Elektronik</button>
+                <button onclick="filterByCategory('pakaian', this)" class="cat-pill bg-white text-slate-700 font-semibold border px-5 py-2.5 rounded-full text-xs shadow-sm">👕 Jaket/Pakaian</button>
+                <button onclick="filterByCategory('lainnya', this)" class="cat-pill bg-white text-slate-700 font-semibold border px-5 py-2.5 rounded-full text-xs shadow-sm">📦 Lainnya</button>
+            </div>
+
+            <div class="flex items-center justify-between pt-4 pb-4">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-black text-slate-900">Barang Terbaru</h2>
+                    <p id="itemCountDisplay" class="text-xs text-slate-500">0 barang ditemukan</p>
+                </div>
+            </div>
+
+            <!-- Items Grid -->
+            <div id="itemsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2"></div>
+        </main>
+
+        <footer class="bg-blue-900 text-white py-6 border-t border-blue-800 mt-auto">
+            <div class="max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between text-xs">
+                <span>© 2026 Oinkie · Lost & Found Sekolah</span>
+            </div>
+        </footer>
+    </section>
+
+    <!-- MODAL LAPOR BARANG -->
+    <div id="laporModal" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl">
+            <div class="bg-blue-800 px-6 py-4 flex items-center justify-between text-white">
+                <h3 class="font-black text-base">Formulir Lapor Barang</h3>
+                <button onclick="closeLaporModal()" class="w-7 h-7 bg-white/10 rounded-full">✕</button>
+            </div>
+
+            <form id="laporForm" onsubmit="handleLaporSubmit(event)" class="p-6 space-y-4 text-xs text-slate-700">
+                <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-2xl">
+                    <button type="button" id="btnTypeHilang" onclick="setReportType('hilang')" class="py-2.5 rounded-xl font-bold bg-rose-500 text-white">😡 Saya Kehilangan</button>
+                    <button type="button" id="btnTypeDitemukan" onclick="setReportType('ditemukan')" class="py-2.5 rounded-xl font-bold text-slate-600">🎉 Saya Menemukan</button>
+                </div>
+
+                <input type="file" id="fileGambar" class="hidden" accept="image/*" onchange="handleFileSelect(this)">
+                <div onclick="triggerImageSelect()" class="border-2 border-dashed border-blue-200 bg-blue-50/50 rounded-2xl p-6 text-center cursor-pointer">
+                    <p id="uploadLabel" class="font-bold text-blue-800">Upload Foto Barang</p>
+                </div>
+
+                <div>
+                    <label class="font-bold block mb-1">Nama Barang</label>
+                    <input type="text" id="inputNama" required placeholder="Contoh: Buku Matematika" class="w-full p-2.5 bg-slate-50 border rounded-xl">
+                </div>
+
+                <div>
+                    <label class="font-bold block mb-1">Kategori</label>
+                    <select id="inputKategori" required class="w-full p-2.5 bg-slate-50 border rounded-xl">
+                        <option value="buku">Buku</option>
+                        <option value="tempat-makan">Tempat Makan</option>
+                        <option value="elektronik">Elektronik</option>
+                        <option value="pakaian">Pakaian</option>
+                        <option value="lainnya">Lainnya</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="font-bold block mb-1">Lokasi Terakhir</label>
+                    <input type="text" id="inputLokasi" required placeholder="Contoh: Kantin" class="w-full p-2.5 bg-slate-50 border rounded-xl">
+                </div>
+
+                <div>
+                    <label class="font-bold block mb-1">Tanggal</label>
+                    <input type="date" id="inputTanggal" required class="w-full p-2.5 bg-slate-50 border rounded-xl">
+                </div>
+
+                <div>
+                    <label class="font-bold block mb-1">Ciri Khusus</label>
+                    <textarea id="inputCiri" rows="2" placeholder="Warna, stiker, dsb..." class="w-full p-2 bg-slate-50 border rounded-xl"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-amber-400 font-extrabold py-3 rounded-2xl shadow-lg">Kirim Laporan</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CLAIM / ACTION -->
+    <div id="actionModal" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl">
+            <h3 id="actionModalTitle" class="text-base font-extrabold">Klaim Barang</h3>
+            <p id="actionModalDesc" class="text-xs text-slate-500">Laporan Anda akan dikirim ke guru piket.</p>
+            <div class="flex gap-2">
+                <button onclick="closeActionModal()" class="w-1/2 bg-slate-100 py-2.5 rounded-xl font-bold">Batal</button>
+                <button onclick="confirmAction()" class="w-1/2 bg-blue-800 text-white py-2.5 rounded-xl font-bold">Kirim Klaim</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GUIDANCE / PANDUAN -->
+    <div id="helpModal" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-md w-full text-left space-y-4 shadow-2xl">
+            <h3 class="font-extrabold text-sm">💡 Panduan Penggunaan Oinkie</h3>
+            <p class="text-xs text-slate-600">Gunakan tombol "+ Lapor Barang" untuk mencatat barang hilang/ditemukan. Untuk klaim barang, klik tombol pada kartu barang untuk verifikasi dengan guru piket.</p>
+            <button onclick="closeHelpModal()" class="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs">Saya Mengerti</button>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script src="FrontEnd.js"></script>
+</body>
+</html>
